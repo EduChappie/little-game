@@ -2,19 +2,26 @@
     <head>
         <title>game</title>
     </head>
-    <body onload="draw()">
+    <body onload="draw()" 
 
         <div id="box" style="width:100%; text-align: center;">
-            <canvas id="screen" style="border: 1px solid black;" width="600px" height="600px"></canvas>
+            <canvas id="screen" style="border: 3px solid white;" width="600px" height="600px"></canvas>
         </div>
         <div id="info">
             <h2 id="level">Level 1</h2>
+            <p id="coor">
+
+            </p>
         </div>
         <style>
             #info {
                 width: 600px;
                 text-align: center;
+                color: white;
                 margin: 0 auto;
+            }
+            body {
+                background: rgb(47, 47, 47);
             }
         </style>
 

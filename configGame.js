@@ -13,13 +13,39 @@ function inThereScreen(P) {
     }
 }
 
+let coor = document.getElementById("coor");
+function enemieCollision(P) {
+    enemies.forEach(it => {
+        coor.innerHTML = `x: ${P.x} - w: ${P.w} <br> y: ${P.y} - h: ${P.h}`
+
+        if (P.x >= it.x && P.x <= (it.x+it.w) || (P.x+P.w) >= it.x && (P.x+P.w) <= (it.x+it.w)) {
+            if (P.y >= it.y && P.y <= (it.y+it.h) || (P.y+P.h) >= it.y && (P.y+P.h) <= (it.y+it.h)) {
+                console.log("colidiu")
+                P.x = 10
+                P.y = 10
+                window.alert("...")
+            }
+        }
+    })
+    return false;
+        
+}
+
+/*enemies.splice(0, enemies.length);
+                console.log("player:")
+                console.log("x: "+P.x+" - y: "+P.y);
+                console.log("-------------")
+                console.log("inimigo colidido:")
+                console.log("x: "+it.x+" - y: "+it.y);
+                perdeu("inimigo");*/
+
 // Função de Colisão com a Maça(Apple)
 function collision(P) {
     if (apple.x >= P.x && apple.x <= (P.x+P.w) || (apple.x+apple.w) >= P.x && (apple.x+apple.w) <= (P.x+P.w)) {
         if (apple.y >= P.y && apple.y <= (P.y+P.h) || (apple.y+apple.h) >= P.y && (apple.y+apple.h) <= (P.y+P.h)) {
             
             // ganha um ponto novo e a maçã ganha novas coordenadas
-            newPoint(P);
+            if (P.type=="player"){newPoint(P)};
             apple.x = Math.random()*575;
             apple.y = Math.random()*575;
         }
@@ -30,7 +56,8 @@ function collision(P) {
 const l = document.querySelector("#level");
 function newPoint(P) {
     P.level += 1;
-    // criando inimigo if(P.level>=3) { newEnemie() }
+    // criando inimigo 
+    if (P.level>=2) { newEnemie() }
     l.innerHTML = `Level ${P.level}`
 }
 
@@ -45,6 +72,9 @@ function perdeu(err) {
     switch (err) {
         case "fora":
             window.alert("Voce saiu do mapa!")
+            break;
+        case "inimigo":
+            window.alert("Voce colidiu com inimigo :(")
     }
 
     // reload de página
@@ -57,17 +87,40 @@ const ctx = screen.getContext("2d");
 
 // criando obstaculos para player
 function newEnemie() {
-    // criou
+    enemies.push({
+        type: "enemie",
+        x: Math.random()*550,
+        y: Math.random()*550,
+        w: 50,
+        h: 50
+    })
 }
 
+const enemies = [
+    {
+        type: "enemie",
+        x: 450,
+        y: 450,
+        w: 50,
+        h: 50,
+    },
+    {
+        type: "enemie",
+        x: 250,
+        y: 250,
+        w: 50,
+        h: 50,
+    }
+];
 // player
 const p1 = {
+    type: "player",
     x: 0,
     y: 0,
     w: 50,
     h: 50,
     direction: null,
-    vel: 50,
+    vel: 1,
     level: 1,
 }
 // maça
@@ -81,7 +134,7 @@ const apple = {
 // evento do teclado
 document.body.onkeydown = () => {
     let k = event.keyCode;
-    
+
     if (k == 37) {
         p1.direction = "left"
     }
@@ -94,7 +147,6 @@ document.body.onkeydown = () => {
     if (k == 40) {
         p1.direction = "down"
     }
-
     draw();
 }
 
@@ -102,7 +154,8 @@ document.body.onkeydown = () => {
 setInterval(() => {
     walk(p1);
     draw();
-}, 300)
+    enemieCollision(p1)
+}, 1)
 
 // walk
 function walk(P) {
@@ -127,11 +180,20 @@ function draw() {
     ctx.clearRect(0, 0, screen.width, screen.height);
     collision(p1);
     
+
     if (inThereScreen(p1)) {
         ctx.fillStyle = "rgb(52, 235, 119)"
         ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
     }
 
+    enemies.forEach( it => {
+        collision(it)
+        enemieCollision(p1)
+        ctx.fillStyle = "rgb(255,255,255)"
+        ctx.fillRect(it.x, it.y, it.w, it.h)
+    })
+
+    enemieCollision(p1)
     ctx.fillStyle = "rgb(224, 51, 45)"
     ctx.fillRect(apple.x, apple.y, apple.w, apple.h);
 }
